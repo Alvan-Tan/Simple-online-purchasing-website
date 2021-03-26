@@ -10,8 +10,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
-Session = sessionmaker(bind = "innodb")
-session = Session()
+# Session = sessionmaker(bind = "innodb")
+# session = Session()
 
 # CORS(app)
 
@@ -53,11 +53,12 @@ def return_all_stock():
     ), 404
 
 #Check if stock exist, minus 1 and return confirmation if it exist, else return error
-@app.route("/stock/<string:name>")
-def find_by_name(name):
+@app.route("/stock/<string:name>", methods=["PUT"])
+def update_stock(name):
     stock = Stock.query.filter_by(name=name).first()
     if stock:
-        stock.quantity -= 1
+        quantity = request.get_json()
+        stock.quantity -= quantity["quantity"]
         db.session.commit()
         return jsonify(
             {

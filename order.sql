@@ -19,41 +19,36 @@
 -- /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `stock`
+-- Database: `error`
 --
-CREATE DATABASE IF NOT EXISTS `stock` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-USE `stock`;
+CREATE DATABASE IF NOT EXISTS `order` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+USE `order`;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `stock`
+-- Table structure for table `order`
 --
 
-DROP TABLE IF EXISTS `stock`;
-CREATE TABLE IF NOT EXISTS `stock` (
-  `SID` int(3) NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) NOT NULL,
-  `quantity` int(3) NOT NULL,
-  `availableforPO` boolean NOT NULL ,
-  PRIMARY KEY (`SID`)
+DROP TABLE IF EXISTS `order`;
+CREATE TABLE IF NOT EXISTS `order` (
+  `OID` int(10) NOT NULL AUTO_INCREMENT,
+  `AID` int(10) NOT NULL,
+  `product_name` varchar (64) NOT NULL,
+  `quantity` int(10) NOT NULL,
+  `total_price` int(10) NOT NULL,
+  `datetime` datetime NOT NULL,
+  `payment_status` varchar(10) NOT NULL,
+  `address` varchar(64) NOT NULL,
+  PRIMARY KEY (`OID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `stock`
+-- Dumping data for table `order`
 --
 
-INSERT INTO `stock` (`name`, `quantity`, `availableforPO`) VALUES
-('A sneaker', '100', True),
-('B sneaker', '100', True),
-('C sneaker', '100', True),
-('D sneaker', '100', True),
-('E sneaker', '100', True),
-('F sneaker', '100', True),
-('G sneaker', '100', True),
-('H sneaker', '100', True),
-('I sneaker', '100', True),
-('J sneaker', '100', True)
+INSERT INTO `order` ( `AID`, `product_name`, `quantity`,  `total_price`, `datetime`, `payment_status`, `address`) VALUES
+(001, "A sneaker", 1, 20, "2020-10-03", "paid", "Waterloo Street 11")
 ;
 
 -- --------------------------------------------------------
