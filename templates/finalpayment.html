@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <title>OhShoot store</title>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <h1>Welcome (User)</h1>
+        </div>
+        <br><br>
+        <div class="row" id="app">
+            <div v-if="payment_status">
+                <img src="images/processing.png">
+            </div>
+            <div v-else>
+                <form>
+                    Product name:
+                    <br>
+                    <p>{{productName}}</p>
+                    Price per shoe:
+                    <br>
+                    <p>{{price}}</p>
+    
+                    <label for="quantity">Quantity</label>
+                    <input type="number" class="form-control" id="quantity" v-model="quantity" min=0>
+                    Total price : 
+                    <input type="hidden" v-model="total_price">
+                    {{ totalPrice() }}
+                    
+                    <br>
+    
+                    <label for="address">Shipping Address</label>
+                    <input type="text" class="form-control" id="address" v-model="address">
+        
+                    <input type="hidden" class="form-control" id="authentication_token" value="ABC">
+                 
+                    <button type="submit" class="btn btn-primary" v-on:click="processForm">Submit</button>
+            
+            <p id="ajax"></p>
+        </div>
+    </div>
+
+    <script>
+        var place_order_URL = "http://localhost:5000/place_order";
+
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                productName: "A sneaker",
+                message: "",
+                price: 50,
+                quantity: 0,
+                total_price: 0,
+                address: "",
+                authentication_token: "abc",
+                OID: 2,
+                AID: 2,
+                payment_status: false
+            },
+            methods: {
+                totalPrice: function () {
+                    return this.quantity * this.price
+                },
+                processForm: function () {
+                    event.preventDefault()
+
+                    let jsonData = JSON.stringify({
+                        product_name: this.productName,
+                        quantity: this.quantity,
+                        total_price: this.total_price,
+                        authentication_token: this.authentication_token,
+                        AID: this.AID
+                    });
+
+                    const response =
+                        fetch(place_order_URL, {
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json"
+                            },
+                            body: jsonData
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(response);
+                                if (data.code <= 200 || data.code >= 300) {
+                                    this.message = data.message;
+                                } else {
+                                    window.location.href = "#"
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+            
+            </script>
+            
+            <body>
+                <div id="paypal-button"></div>
+                <script src="https://www.paypal.com/sdk/js?client-id=ATtOwXSVt1lZ-0LkVNOGuawBkumaGwh0af_FqpMwuZrY2gIFS4sXLGxVNrH-MqkM7DlV34fZZ7y2l7Pb"></script>
+                </script>
+            <script>
+            paypal.Buttons({
+
+                createOrder: function (data, actions) {
+                return actions.order.create({
+                    purchase_units : [{
+                    amount: {
+                    value: $ + total_price  // this.total_price //have to change and link to price from previous microservices
+                }
+            }]
+        });
+    },
+                onApprove: function (data, actions) {
+                    return actions.order.capture().then(function (details) {
+                        window.alert('Thank you for your purchase!');
+            // console.log(details)
+            // window.location.replace("success.html")
+            // invoke shipping microservice
+        });
+    }
+}).render("#paypal-button");
+</script>
+            
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
+        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous">
+    </script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
+        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous">
+    </script>
+
+
+</body>
+
+</html>

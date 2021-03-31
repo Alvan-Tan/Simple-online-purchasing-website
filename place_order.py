@@ -16,7 +16,7 @@ CORS(app)
 account_URL = "http://localhost:5002/account_check"
 stock_URL = "http://localhost:5001/stock/"
 payment_URL = ""
-order_URL = ""
+order_URL = "http://localhost:5004/order/create_record"
 shipping_URL = "http://localhost:5003/shipping/create_record"
 
 #error_URL = "http://localhost:5004/error"
@@ -150,6 +150,40 @@ def processPlaceOrder(order):
     }
 
 def processPlaceOrder2(order):
+    print('\n\n-----Invoking order microservice-----')      
+    order_json = {
+                        "AID": order["AID"],
+                        "datetime": datetime.now().strftime("%Y/%m/%d %H:%M:%S"),
+                        "payment_status": order["payment_status"],
+                        "product_name" : order["product_name"],
+                        "quantity" : order["quantity"],
+                        "total_price" : order["total_price"],
+                        "address": order["address"]
+                    }
+    order_status = invoke_http(order_URL, method="POST", json=order_json) 
+
+    code = order_status["code"]
+    message = json.dumps(order_status)
+    order["OID"] = order_status["data"]["OID"]
+    
+
+    if code not in range(200, 300):
+        # Do not have required stock
+        print('\n\n-----Order record creation failed, cancel transaction, invoke error microservice-----')
+        
+        #Send error details to error microservice
+        
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="shipping.error", 
+            body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
+        # make message persistent within the matching queues until it is received by some receiver 
+        # (the matching queues have to exist and be durable and bound to the exchange)
+
+        # 3. Return error
+        return {
+            "code": 500,
+            "data": {"order_status": order_status["message"]},
+        }
+
     # 4. Create shipping record
     print('\n\n-----Invoking shipping microservice-----')      
     shipping_json = {
@@ -180,18 +214,18 @@ def processPlaceOrder2(order):
         # 3. Return error
         return {
             "code": 500,
-            "data": {"payment_status": shipping_status["message"]},
+            "data": {"shipping_status": shipping_status["message"]},
         }
     
     # Shipment record created successfully, add details into order database
-    print('\n\n-----Shipping record creation successful, invoke order microservice-----')
-    order["datetime"] = shipping_json["datetime"]
+    # print('\n\n-----Shipping record creation successful, invoke order microservice-----')
+    # order["datetime"] = shipping_json["datetime"]
     
-    #Send order details to order microservice
-    amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="successful.order", 
-        body=json.dumps(order), properties=pika.BasicProperties(delivery_mode = 2)) 
-    # make message persistent within the matching queues until it is received by some receiver 
-    # (the matching queues have to exist and be durable and bound to the exchange)
+    # #Send order details to order microservice
+    # amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="successful.order", 
+    #     body=json.dumps(order), properties=pika.BasicProperties(delivery_mode = 2)) 
+    # # make message persistent within the matching queues until it is received by some receiver 
+    # # (the matching queues have to exist and be durable and bound to the exchange)
 
     #redirect user to order completion page
     return {

@@ -57,8 +57,8 @@ def return_all_stock():
 def update_stock(name):
     stock = Stock.query.filter_by(name=name).first()
     if stock:
-        quantity = request.get_json()
-        stock.quantity -= quantity["quantity"]
+        quantity = request.get_json() 
+        stock.quantity -= int(quantity["quantity"])
         db.session.commit()
         return jsonify(
             {

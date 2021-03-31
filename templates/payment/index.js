@@ -15,11 +15,14 @@ paypal.Buttons({
     onApprove: function (data, actions) {
         return actions.order.capture().then(function (details) {
             console.log(details)
-            window.location.replace("success.html")
+            console.log(details.status)
+            console.log(data)
+            // window.location.replace("success.html")
             //invoke shipping microservice
         })
     },
     onCancel: function (data) {
-        window.location.replace("notsuccess.html")
+        return console.log(data)
+        // window.location.replace("notsuccess.html")
     }
 }).render('#paypal-payment-button');
