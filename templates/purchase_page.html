@@ -12,14 +12,15 @@
 </head>
 
 <body>
-    <div class="container">
+    <div class="container"  id="app">
         <div class="row">
-            <h1>Welcome (User)</h1>
+            <h1>Welcome {{user}}</h1>
         </div>
         <br><br>
-        <div class="row" id="app">
+        <div class="row">
             <div v-if="process_payment">
                 <img src="images/processing.png">
+                <br>
                 <button v-if="payment_button" v-on:click="process_paypal">Make payment</button>
                 <div id="paypal-button"></div>
             </div>
@@ -44,12 +45,9 @@
                     <input type="text" class="form-control" id="address" v-model="address">
         
                     <input type="hidden" class="form-control" id="authentication_token" value="ABC">
-                 
-                  
-    
-          
-                    <button type="submit" class="btn btn-primary" v-on:click="processForm">Submit</button>
                 </form>
+                <button class="btn btn-primary" v-on:click="processForm">Submit</button>
+                <button class="btn btn-danger" v-on:click="return_to_index">Cancel</button>
                 
             </div>
         
@@ -57,8 +55,10 @@
     </div>
 
     <!-- payment stuff -->
-    <script src="https://www.paypal.com/sdk/js?client-id=ATtOwXSVt1lZ-0LkVNOGuawBkumaGwh0af_FqpMwuZrY2gIFS4sXLGxVNrH-MqkM7DlV34fZZ7y2l7Pb&disable-funding=credit,card"></script>
-    
+    <!-- <script src="https://www.paypal.com/sdk/js?client-id=ATtOwXSVt1lZ-0LkVNOGuawBkumaGwh0af_FqpMwuZrY2gIFS4sXLGxVNrH-MqkM7DlV34fZZ7y2l7Pb&disable-funding=credit,card"></script> -->
+
+    <script src="https://www.paypal.com/sdk/js?client-id=ATtOwXSVt1lZ-0LkVNOGuawBkumaGwh0af_FqpMwuZrY2gIFS4sXLGxVNrH-MqkM7DlV34fZZ7y2l7Pb&currency=SGD&disable-funding=credit,card">
+    </script>
      <!-- payment stuff -->
 
     <script>
@@ -68,13 +68,15 @@
         var vm = new Vue({
             el: '#app',
             data: {
-                productName: "A sneaker",
+                productName: "",
                 message: "",
                 price: 50,
                 quantity: 0,
                 address: "",
-                authentication_token: "abc",
-                AID: 2,
+                authentication_token: "",
+                user_email : "",
+                user : "",
+                AID: 0,
                 payment_status: "Not Done",
                 process_payment: false,
                 payment_button: true
@@ -107,8 +109,22 @@
                             .then(response => response.json())
                             .then(data => {
                                 console.log(response);
-                                if (data.code <= 200 || data.code >= 300) {
-                                    this.message = data.message;
+                                if (data.code < 200 || data.code >= 300) {
+                                    message = data.message
+                                    if (message == "User not logged in yet"){
+                                        alert("You are either not logged in or your session has expired! Redirecting to login page.")
+                                        window.location.replace("login.html")
+                                    }
+                                    else{
+                                        const SID = data.data.stock_status.data.SID
+                                        const name = data.data.stock_status.data.name
+                                        const pictureURL = data.data.stock_status.data.pictureURL
+                                        const price = data.data.stock_status.data.price
+                                        const quantity = data.data.stock_status.data.quantity
+                                    
+                                        let url = `preorder.html?user_email=${this.user_email}&SID=${SID}&name=${name}&pictureURL=${pictureURL}&price=${price}&user_quantity=${this.quantity}&token=${this.authentication_token}&AID=${this.AID}&total_price=${this.total_price}&address=${this.address}`
+                                        window.location.replace(url)
+                                    }
                                 } else {
                                     this.process_payment = true
                                 }
@@ -148,8 +164,10 @@
                                 if (data.code <= 200 || data.code >= 300) {
                                     this.message = data.message;
                                 } else {
-                                    // window.location.href = ""
+                                    url = `index.html?email=${this.user_email}&token=${this.authentication_token}`
                                     alert("successful")
+                                    window.location.replace(url)
+                                    
                                 }
                             })
                             .catch(error => {
@@ -179,56 +197,62 @@
                                         });
                                     },
                         onApprove: function (data, actions) {
-                            // return actions.order.capture().then(function (details) {
-                                
-                            //     // window.location.replace("success.html")
-                            // })
+                            
                             vm.processForm2()
                         },
                         onCancel: function (data) {
-                            window.location.replace("payment/notsuccess.html")
+                            alert("Order Canceled, redirecting back to homepage")
+                            url = `index.html?email=${this.user_email}&token=${this.authentication_token}`
+                            window.location.replace(url)
                         }
                         
                     }).render('#paypal-button');
                     // END payment stuff
-                }
+                },
+                get_selected_details: function(){
+                    var queryString = window.location.search;
+                    if (queryString.length > 1){
+                        queryString = queryString.slice(1);
+                        var elements = queryString.split("&");
+                        this.productName =  decodeURI(elements[0].split("=")[1])
+                        this.user_email = elements[1].split("=")[1]
+                        this.authentication_token =  elements[2].split("=")[1]
+                    }
+                },
+                return_to_index: function(){
+                    url = `index.html?email=${this.user_email}&token=${this.authentication_token}`
+                    window.location.replace(url)
+                },
+                get_user: function(){
+                    url = "http://localhost:5002/get_name/" + this.user_email;
+                    const response =
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(response);
+                                if (data.code < 200 || data.code >= 300) {
+                                    alert("No such user")
+                                } else {
+                                    this.user = data.data.name;
+                                    this.AID = data.data.AID
+                                
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+                },
+            },
+            created: function(){
+               this.get_selected_details();
+               this.get_user();
             }
+
         })
 
-
-        
-
-        
-
-        // function processForm() {
-        //     event.preventDefault()
-        //     var order_json = {
-        //         "product_name" : document.getElementById("product_name").value,
-        //         "quantity" : document.getElementById("quantity").value,
-        //         "total_price": document.getElementById("total_price").value,
-        //         "address" : document.getElementById("address").value,
-        //         "authentication_token" : document.getElementById("authentication_token").value,
-        //         "OID" : document.getElementById("OID").value,
-        //         "AID" : document.getElementById("AID").value
-        //     };
-        //     console.log(order_json)
-        //     // var response = getData()
-        //     // console.log(response)
-        // }
-        
-       
-        // function getData() {
-        //         var request = new XMLHttpRequest();
-        //         request.onreadystatechange = function () {
-        //             if (this.readyState == 4 && this.status == 200) {
-        //                 document.getElementById("ajax").innerHTML =
-        //                     this.responseText;
-        //             }
-        //         };
-        //         request.open("POST", "place_order.py", true);
-        //         request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        //         request.send(order_json);
-        //     }
     </script>
     
     

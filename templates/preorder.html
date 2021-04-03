@@ -1,50 +1,196 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <title>Login</title>
+    
+    <title>OhShoot preorder</title>
 </head>
 <body>
-    <div class="container">
-        <!-- Picture of product -->
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col mx-auto">
-                <img src="64 Legless Cat Launch Attack.jpg" alt="product1">
-            </div>
-            <div class="col-3"></div>
+    <div class="container" id="app">
+        <!-- how do we include user's name? -->
+        <h1>Welcome {{user}}</h1>
+        <div v-if="process_payment">
+            <img src="images/processing.png">
+            <br>
+            <button v-if="payment_button" v-on:click="process_paypal">Make payment</button>
+            <div id="paypal-button"></div>
         </div>
-
-        <!-- Product details -->
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col mx-auto">
-                <ul>
-                    <li>Product Name: XXX</li>
-                    <li>Quantity : XXX</li>
-                    <li>Total amount: $XXX</li>
-                </ul>
+        <div v-else>
+            <h2>We have ran out of stocks, would you like to preorder?</h2>
+            <hr>
+            <div class="row">
+                <div class="col">
+                    <div class="card" style="width: 18rem;" >
+                        <img class="card-img-top" :src="pictureURL">
+                        <div class="card-body">
+                            <h5 class="card-title">{{name}}</h5>
+                            <p>Quantity : {{user_quantity}}</p>
+                            <button v-on:click="process_preorder1" class="btn btn-primary">Yes</button>
+                            <button v-on:click="cancel_preorder" class="btn btn-danger">No</button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-3"></div>
-        </div>
-    
-        <!-- Submit button -->
-        <div class="row">
-            <div class="col-3"></div>
-            <div class="col mx-auto">
-                <button type="button" class="btn btn-primary" onclick="">Confirm Order</button>
-            </div>
-            <div class="col-3"></div>
         </div>
         
+        <br><br>
+        
+    </div> 
+    <!-- payment stuff -->
+    <script src="https://www.paypal.com/sdk/js?client-id=ATtOwXSVt1lZ-0LkVNOGuawBkumaGwh0af_FqpMwuZrY2gIFS4sXLGxVNrH-MqkM7DlV34fZZ7y2l7Pb&currency=SGD&disable-funding=credit,card">
+    </script>
+    <!-- payment stuff -->
 
-    </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
-       
+    <script>
+        var preorder_url = "http://localhost:5005/preorder/create_record"
+         var vm = new Vue({
+            el: '#app',
+            data: {
+                SID: 0,
+                name: "",
+                pictureURL: "",
+                price: "",
+                user_quantity: 0,
+                user_email: "",
+                user: "",
+                authentication_token: "",
+                process_payment: false,
+                payment_button: true,
+                AID: 0,
+                total_price: 0,
+                payment_status: "Not Done",
+                address: "",
+            },
+            computed:{
+            },
+            methods:{
+                get_preorder_details: function(){
+                    var queryString = window.location.search;
+                    if (queryString.length > 1){
+                        queryString = queryString.slice(1);
+                        var elements = queryString.split("&");
+                        this.user_email =  elements[0].split("=")[1]
+                        this.SID =  elements[1].split("=")[1]
+                        this.name =  decodeURI(elements[2].split("=")[1])
+                        this.pictureURL =  elements[3].split("=")[1]
+                        this.price =  elements[4].split("=")[1]
+                        this.user_quantity = elements[5].split("=")[1]
+                        this.authentication_token = elements[6].split("=")[1]
+                        this.AID = elements[7].split("=")[1]
+                        this.total_price = elements[8].split("=")[1]
+                        this.address = decodeURI(elements[9].split("=")[1])
+                    }
+                    
+                },
+                process_preorder1: function(){
+                    this.process_payment = true
+                },
+                process_preorder2: function(){
+                    this.payment_status = "paid"
+                    let jsonData = JSON.stringify({
+                        AID: this.AID,
+                        product_name: this.name,
+                        quantity: this.user_quantity,
+                        payment_status: this.payment_status,
+                        total_price: this.total_price,
+                        address: this.address,
+                    });
+                    const response =
+                        fetch(preorder_url, {
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json"
+                            },
+                            body: jsonData
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(response);
+                                if (data.code < 200 || data.code >= 300) {
+                                    alert("Not successful")
+                                    
+                                } else {
+                                    
+                                    alert("Successful")
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+                },
+                get_user: function(){
+                    url = "http://localhost:5002/get_name/" +this.user_email;
+                    const response =
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(response);
+                                if (data.code < 200 || data.code >= 300) {
+                                    alert("No such user")
+                                } else {
+                                    this.user = data.data.name;
+                                
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+                },
+                cancel_preorder: function(){
+                    url = `index.html?email=${this.user_email}&token=${this.authentication_token}`
+                    window.location.replace(url)
+                },
+                process_paypal: function(){
+                    // START payment stuff
+                    this.payment_button = false
+                    paypal.Buttons({
+                        style : {
+                            color: 'blue',
+                            shape: 'pill'
+                        },
+                        createOrder: function (data, actions) {
+                                    let total = vm.total_price
+                                    return actions.order.create({
+                                            purchase_units : [{
+                                                amount: {
+                                                    value: total // have to change and link to price from previous microservices
+                                                }
+                                            }]
+                                        });
+                                    },
+                        onApprove: function (data, actions) {
+                            vm.process_preorder2()
+                            
+                        },
+                        onCancel: function (data) {
+                            alert("Order Canceled, redirecting back to homepage")
+                            url = `index.html?email=${vm.user_email}&token=${vm.authentication_token}`
+                            window.location.replace(url)
+                        }
+                        
+                    }).render('#paypal-button');
+                    // END payment stuff
+                },
+
+            },
+            created: function(){
+                this.get_preorder_details();
+                this.get_user();
+            }
+        })
+    </script>
 </body>
 </html>

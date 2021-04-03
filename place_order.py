@@ -13,7 +13,7 @@ app = Flask(__name__)
 
 CORS(app)
 
-account_URL = "http://localhost:5002/account_check"
+account_URL = "http://localhost:5002/verify"
 stock_URL = "http://localhost:5001/stock/"
 payment_URL = ""
 order_URL = "http://localhost:5004/order/create_record"
@@ -91,8 +91,8 @@ def processPlaceOrder(order):
     # 1. Check if the user is logged in
     # Invoke the account microservice
     print('\n-----Invoking account microservice-----')
-    user_json = {"authentication_token":order["authentication_token"]}
-    user_status = invoke_http(account_URL, method="GET", json=user_json)
+    user_json = {"token":order["authentication_token"]}
+    user_status = invoke_http(account_URL, method="POST", json=user_json)
     print('user_status_results:', user_status["message"])
   
     # Check the order result; if a failure, send it to the error microservice.
@@ -101,7 +101,7 @@ def processPlaceOrder(order):
 
     if code not in range(200, 300):
         # Redirect user to log in page
-        print('\n\n-----User not logged in, Redirect to log in page-----')
+        print('\n\n-----User not logged in-----')
         
         #invoke_http(error_URL, method="POST", json=order_result)
         amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="account.error", 
@@ -139,7 +139,7 @@ def processPlaceOrder(order):
         # 3. Return error
         return {
             "code": 500,
-            "data": {"stock_status": stock_status["message"]},
+            "data": {"stock_status": stock_status},
         }     
     # return render_template("payment/payment.html")
     return {

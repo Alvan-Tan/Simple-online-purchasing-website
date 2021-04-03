@@ -34,8 +34,10 @@ DROP TABLE IF EXISTS `stock`;
 CREATE TABLE IF NOT EXISTS `stock` (
   `SID` int(3) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL,
+  `price` varchar(64) NOT NULL,
   `quantity` int(3) NOT NULL,
   `availableforPO` boolean NOT NULL ,
+  `pictureURL` varchar(64) NOT NULL,
   PRIMARY KEY (`SID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
@@ -43,17 +45,10 @@ CREATE TABLE IF NOT EXISTS `stock` (
 -- Dumping data for table `stock`
 --
 
-INSERT INTO `stock` (`name`, `quantity`, `availableforPO`) VALUES
-('A sneaker', '100', True),
-('B sneaker', '100', True),
-('C sneaker', '100', True),
-('D sneaker', '100', True),
-('E sneaker', '100', True),
-('F sneaker', '100', True),
-('G sneaker', '100', True),
-('H sneaker', '100', True),
-('I sneaker', '100', True),
-('J sneaker', '100', True)
+INSERT INTO `stock` (`name`, `price`, `quantity`, `availableforPO`, `pictureURL`) VALUES
+('Nike Free RN Flyknit', 50, 100, True, 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1500&q=80'),
+('Nike Airmax', 50, 100, True, 'https://images.unsplash.com/photo-1460353581641-37baddab0fa2?ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&ixlib=rb-1.2.1&auto=format&fit=crop&w=1502&q=80'),
+('Nike Airforce 1 Low Carhartt WIP Ale Brown', 50, 100, True, 'https://images.unsplash.com/photo-1549298916-b41d501d3772?ixlib=rb-1.2.1&ixid=MXwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHw%3D&auto=format&fit=crop&w=1400&q=80')
 ;
 
 -- --------------------------------------------------------

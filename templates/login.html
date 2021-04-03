@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
@@ -9,37 +10,51 @@
 <body>
     <div class="container">
         <h1>Login</h1>
+        <div class="row" id="app">
+            <div v-if="formSubmitted">
+                form submitted
+            </div>
+            <div v-else>
+                <form>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" class="form-control" id="email" aria-describedby="email" v-model="email">
+                        
+                        <!-- <small class="form-text text-danger font-weight-bold">
+                            <p id="usernameError" class="d-none">Please Enter Your Username</p>
+                        </small> -->
+                    </div>  
+        
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" class="form-control" id="password" v-model="password">
+                        
+                        <!-- <small class="form-text text-danger font-weight-bold">
+                            <p id="passwordError" class="d-none">Please Enter Your Password</p>
+                        </small> -->
+                        <!-- <small id="passwordHelp" class="form-text text-muted">Forgot your password? Click Here</small> -->
+        
+                    </div>
+                    <!-- <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="keepLoggedIn">
+                        <label class="form-check-label" for="keepLoggedIn">Keep Me Logged In</label>
+                    </div> -->
+                    <p>Don't have an account yet? Click <a href="register.html">here</a> to register</p>
+                    <div class="text text-danger font-weight-bold">
+                        <!-- Error List -->
+                        <p id="loginResult"></p>
+                    </div>
+        
+                    <button type="button" class="btn btn-primary" @click="processLogin">Login</button>
 
-        <form>
-            <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" aria-describedby="username">
-                <!-- <small class="form-text text-danger font-weight-bold">
-                    <p id="usernameError" class="d-none">Please Enter Your Username</p>
-                </small> -->
-            </div>  
-
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" class="form-control" id="password">
-                <!-- <small class="form-text text-danger font-weight-bold">
-                    <p id="passwordError" class="d-none">Please Enter Your Password</p>
-                </small> -->
-                <!-- <small id="passwordHelp" class="form-text text-muted">Forgot your password? Click Here</small> -->
+                    <p id="error"></p>
+                </form>
 
             </div>
-            <!-- <div class="form-group form-check">
-                <input type="checkbox" class="form-check-input" id="keepLoggedIn">
-                <label class="form-check-label" for="keepLoggedIn">Keep Me Logged In</label>
-            </div> -->
-            <p>Don't have an account yet? Click <a href="register.html">here</a> to register</p>
-            <div class="text text-danger font-weight-bold">
-                <!-- Error List -->
-                <p id="loginResult"></p>
-            </div>
 
-            <button type="button" class="btn btn-primary" onclick="processLogin()">Login</button>
-          </form>
+            
+            
+        </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj" crossorigin="anonymous"></script>
@@ -47,30 +62,81 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <script>
         //If user is logged in, redirect to homepage
-        if (localStorage.getItem("username") != null) {
-            window.location.replace("index.html"); 
-        }
+        // if (localStorage.getItem("username") != null) {
+        //     window.location.replace("index.html"); 
+        // }
         
-        function processLogin() {
-            let username = document.getElementById("username").value;
-            let password = document.getElementById("password").value;
+        // function processLogin() {
+        //     let username = document.getElementById("username").value;
+        //     let password = document.getElementById("password").value;
             
-            const request = new XMLHttpRequest();
-            request.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    let loginData = JSON.parse(this.responseText);
-                    if (loginData.result == true) {
-                        localStorage.username = loginData.output;
-                        window.location.replace("index.html"); 
-                    } else {
-                        document.getElementById("loginResult").innerHTML = loginData.output
-                    }
-                }
+        //     const request = new XMLHttpRequest();
+        //     request.onreadystatechange = function() {
+        //         if (this.readyState == 4 && this.status == 200) {
+        //             let loginData = JSON.parse(this.responseText);
+        //             if (loginData.result == true) {
+        //                 localStorage.username = loginData.output;
+        //                 window.location.replace("index.html"); 
+        //             } else {
+        //                 document.getElementById("loginResult").innerHTML = loginData.output
+        //             }
+        //         }
+        //     }
+        //     request.open('POST', 'backend/process_login.php', true);
+        //     request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        //     request.send(`username=${username}&password=${password}`);
+        // }
+        
+        var login_url = "http://localhost:5002/login"
+        var vm = new Vue({
+            el: '#app',
+            data: {
+                email: "",
+                password: "",
+                formSubmitted: false,
+            },
+            computed: {
+            },
+            methods: {
+                processLogin: function () {
+                    let jsonData = JSON.stringify({
+                        email: this.email,
+                        password: this.password,
+                    });
+
+                    const response =
+                        fetch(login_url, {
+                            method: "POST",
+                            headers: {
+                                "Content-type": "application/json"
+                            },
+                            body: jsonData
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(response);
+                                if (data.code < 200 || data.code >= 300) {
+                                
+                                    error_ele = document.getElementById("error")
+                                    error_ele.innerText = data.message;
+                                    
+                                } else {
+                                    this.formSubmitted = true
+                                    var authentication_token = data.token
+                                    url = `index.html?email=${this.email}&token=${authentication_token}`
+                                    window.location.replace(url)
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+
+                },
             }
-            request.open('POST', 'backend/process_login.php', true);
-            request.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-            request.send(`username=${username}&password=${password}`);
-        }
+        })
     </script>
 </body>
 </html>
