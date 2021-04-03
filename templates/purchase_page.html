@@ -201,8 +201,9 @@
                             vm.processForm2()
                         },
                         onCancel: function (data) {
+                            vm.release_stock()
                             alert("Order Canceled, redirecting back to homepage")
-                            url = `index.html?email=${this.user_email}&token=${this.authentication_token}`
+                            url = `index.html?email=${vm.user_email}&token=${vm.authentication_token}`
                             window.location.replace(url)
                         }
                         
@@ -235,6 +236,36 @@
                                 } else {
                                     this.user = data.data.name;
                                     this.AID = data.data.AID
+                                
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+                },
+                release_stock: function(){
+                    url = "http://localhost:5001/stock/add/" + this.productName;
+                    let jsonData = JSON.stringify({
+                        quantity: this.quantity,
+                    });
+                    const response =
+                        fetch(url, {
+                                method: "PUT",
+                                headers: {
+                                    "Content-type": "application/json"
+                                },
+                                body: jsonData
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(response);
+                                if (data.code < 200 || data.code >= 300) {
+                                    console.log("stock not released")
+                                } else {
+                                    console.log("stock released")
                                 
                                 }
                             })

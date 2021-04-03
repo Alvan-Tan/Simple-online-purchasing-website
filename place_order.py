@@ -14,7 +14,7 @@ app = Flask(__name__)
 CORS(app)
 
 account_URL = "http://localhost:5002/verify"
-stock_URL = "http://localhost:5001/stock/"
+stock_URL = "http://localhost:5001/stock/minus/"
 payment_URL = ""
 order_URL = "http://localhost:5004/order/create_record"
 shipping_URL = "http://localhost:5003/shipping/create_record"

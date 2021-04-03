@@ -56,8 +56,8 @@ def return_all_stock():
     ), 404
 
 #Check if stock exist, minus 1 and return confirmation if it exist, else return error
-@app.route("/stock/<string:name>", methods=["PUT"])
-def update_stock(name):
+@app.route("/stock/minus/<string:name>", methods=["PUT"])
+def minus_stock(name):
     stock = Stock.query.filter_by(name=name).first()
     quantity = request.get_json() 
     if stock:
@@ -79,6 +79,28 @@ def update_stock(name):
                     "message": "Out of stocks",
                 }
             ), 404
+
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Stock not found."
+        }
+    ), 404
+
+@app.route("/stock/add/<string:name>", methods=["PUT"])
+def add_stock(name):
+    stock = Stock.query.filter_by(name=name).first()
+    quantity = request.get_json() 
+    if stock:
+        stock.quantity += int(quantity["quantity"])
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": stock.json(),
+                "message": "stock added successfully"
+            }
+        )
 
     return jsonify(
         {
