@@ -48,7 +48,6 @@ def return_all_preorder():
         }
     ), 404
 
-#Create a shipping record and return success or failure
 @app.route("/preorder/create_record", methods=["POST"])
 def create_preorder_record():
 
@@ -74,6 +73,62 @@ def create_preorder_record():
             "data": record.json()
         }
     ), 201
+
+@app.route("/preorder/restock")
+def preorder_restock():
+    #get name and qty of new stock
+    data = request.get_json()
+    product_name = data["product_name"]
+    new_stock = data["new_stock"]
+
+    #filter out preorders by name of new stock
+    preorder = Preorder.query.filter_by(product_name=product_name)
+    #holder for later
+    preorder_list = []
+    count = 0
+    if preorder:
+        for i in preorder:
+            #run until new_stock runs out, 
+            #if new_stock greater than PO , remainder can send to normal stock
+            #if new_stock lesser than PO, 0 to send to stocks, newest PO will be unfulfilled
+            quantity = i.quantity
+            new_stock = int(new_stock)
+            if new_stock != 0:
+                if new_stock >= quantity:
+                    preorder_list.append(i.json())
+                    db.session.delete(i)
+                    db.session.commit()
+                    #drop new_stock 1 by 1
+                    new_stock -= quantity
+                    count += quantity
+                else:
+                    quantity -= new_stock
+                    count += new_stock
+                    new_stock = 0
+                    i.quantity = quantity
+                    preorder_list.append(i.json())
+                    db.session.commit()
+                    break
+                
+        return jsonify(
+            {
+                "code": 200,
+                "data": {
+                    "product_name":product_name,
+                    "preorders" : preorder_list,
+                    "new_stock" : new_stock
+                },
+                "message": str(count) + " preorder(s) cleared."
+            }
+        )
+
+    return jsonify(
+        {
+            "code": 404,
+            "message": "There are no Preorder Records."
+        }
+    ), 404
+
 
 
 

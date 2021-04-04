@@ -41,9 +41,9 @@ CREATE TABLE IF NOT EXISTS `error` (
 -- Dumping data for table `error`
 --
 
-INSERT INTO `error` ( `message`) VALUES
-("code: 400, data: {order_id: 5}, message: Simulated failure in shipping record creation.")
-;
+-- INSERT INTO `error` ( `message`) VALUES
+-- ("code: 400, data: {order_id: 5}, message: Simulated failure in shipping record creation.")
+-- ;
 
 -- --------------------------------------------------------
 

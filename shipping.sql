@@ -46,11 +46,11 @@ CREATE TABLE IF NOT EXISTS `shipping` (
 -- Dumping data for table `shipping`
 --
 
-INSERT INTO `shipping` (`AID`, `OID`, `product_name`, `payment_status`, `address`, `datetime`) VALUES
-(001, 001, "A Sneaker", 'Paid', '123 lala land', "2020-01-13"),
-(002, 002, "C Sneaker", 'Paid', '456 lala land', "2020-01-14")
+-- INSERT INTO `shipping` (`AID`, `OID`, `product_name`, `payment_status`, `address`, `datetime`) VALUES
+-- (001, 001, "A Sneaker", 'Paid', '123 lala land', "2020-01-13"),
+-- (002, 002, "C Sneaker", 'Paid', '456 lala land', "2020-01-14")
 
-;
+-- ;
 
 -- --------------------------------------------------------
 

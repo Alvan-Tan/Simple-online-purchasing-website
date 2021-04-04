@@ -47,9 +47,9 @@ CREATE TABLE IF NOT EXISTS `order` (
 -- Dumping data for table `order`
 --
 
-INSERT INTO `order` ( `AID`, `product_name`, `quantity`,  `total_price`, `datetime`, `payment_status`, `address`) VALUES
-(001, "A sneaker", 1, 20, "2020-10-03", "paid", "Waterloo Street 11")
-;
+-- INSERT INTO `order` ( `AID`, `product_name`, `quantity`,  `total_price`, `datetime`, `payment_status`, `address`) VALUES
+-- (001, "A sneaker", 1, 20, "2020-10-03", "paid", "Waterloo Street 11")
+-- ;
 
 -- --------------------------------------------------------
 

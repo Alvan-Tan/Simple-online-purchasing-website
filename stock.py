@@ -22,7 +22,6 @@ class Stock(db.Model):
     name = db.Column(db.String(64), nullable=False)
     price = db.Column(db.Integer, nullable=False)
     quantity = db.Column(db.Integer, nullable=False)
-    availableforPO = db.Column(db.Boolean)
     pictureURL = db.Column(db.String(64), nullable=False)
 
     # def __init__(self, SID, name, quantity, availableforPO):
@@ -33,7 +32,7 @@ class Stock(db.Model):
 
 
     def json(self):
-        return {"SID": self.SID, "name": self.name, "price": self.price, "quantity": self.quantity, "availableforPO": self.availableforPO, "pictureURL": self.pictureURL}
+        return {"SID": self.SID, "name": self.name, "price": self.price, "quantity": self.quantity, "pictureURL": self.pictureURL}
 
 #Return stocklist, not sure whats the usage yet.
 @app.route("/stock")
@@ -108,6 +107,58 @@ def add_stock(name):
             "message": "Stock not found."
         }
     ), 404
+
+@app.route("/stock/<string:name>")
+def find_by_sname(name):
+    stock = Stock.query.filter_by(name=name).first()
+    if stock:
+        db.session.commit()
+        return jsonify(
+            {
+                "code": 200,
+                "data": stock.json(),
+                "message": "Stock found."
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "No such shoe name available."
+        }
+    ), 404
+
+@app.route("/addNewShoe/<string:name>", methods=["POST"])
+def create_shoe(name):
+    if(Stock.query.filter_by(name=name).first()):
+        return jsonify(
+            {
+                "message": "Shoe Name already exists."
+            }
+        ), 400
+
+    data = request.get_json()
+    stock = Stock(**data)
+
+    try:
+        db.session.add(stock)
+        db.session.commit()
+    except:
+        return jsonify(
+            {
+                "code": 500,
+                "data": {
+                    "name": name
+                },
+                "message": "An error occurred creating the shoe."
+            }
+        ), 500
+
+    return jsonify(
+        {
+            "code": 201,
+            "data": stock.json()
+        }
+    ), 201
 
 
 if __name__ == "__main__":

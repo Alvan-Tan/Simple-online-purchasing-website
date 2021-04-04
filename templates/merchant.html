@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta name="description" content="">
+        <meta name="author" content="">
+
+        <title>OhShoot Inventory</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+        <!-- Custom styles for this template -->
+        <link href="css/shop-homepage.css" rel="stylesheet">
+
+        <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+
+        <!-- Bootstrap libraries -->
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+            integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+
+        <!-- Latest compiled and minified JavaScript -->
+        <!-- <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script> -->
+
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+            integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    </head>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+
+    <body>
+
+        <!-- Navigation -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container">
+
+                <a class="navbar-brand" href="merchant.html" style="font-size: 24px">OhShoot Inventory</a>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                </div>
+            </div>
+        </nav>
+        <br>
+        <!-- Page Content -->
+        <div class="container" id="app">
+
+            <!-- Search for shoes in DB -->
+            <div class="row" style="top: 20px;">
+                <div class="col-10" style="top: 20px; margin: 0 auto;">
+
+                    <h1>Search for Shoes</h1>
+                    <form id="sForm">
+                        <input name="name" type="text" id="name" class="form-control"
+                            placeholder="Enter the name of the shoe" required autofocus>
+                        <br>
+                        <input type="submit" value="Search" class="btn btn-primary">
+                    </form>
+
+                    <br>
+                    <div id="results">
+                        <table id="stocksTable" class='table table-striped' id='book-list' border='1'>
+                            <thead>
+                                <th>SID</th>
+                                <th>Name</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                            </thead>
+                        </table>
+                    </div>
+
+                    <label id="error" class="text-danger"></label>
+
+                </div>
+            </div>
+            <!-- ./search shoe row -->
+
+
+            <div class="row d-flex justify-content-center">
+                <!-- Add shoes QTY -->
+                <div class="col-5" style="top: 20px;">
+
+                    <h1>Add Shoe Quantity</h1>
+
+                    <div class="form-group">
+                        <label for="name">Product Name</label>
+                        <input v-model="product_name" type="text" class="form-control" placeholder="Enter name of shoe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="qty">Quantity</label>
+                        <input v-model="quantity" type="text" class="form-control" id="quantity"
+                            placeholder="Enter quantity of new shoe">
+                    </div>
+
+                    <!-- <button type="submit" class="btn btn-primary">Submit</button> -->
+                    <button @click="addQty" class="btn btn-primary" v-on:submit.prevent="onSubmit">Add Quantity</button>
+                </div>
+
+                <label id="error" class="text-danger"></label>
+
+
+                <!-- Add new shoes -->
+                <div class="col-5" style="top: 20px;">
+
+                    <h1>Add New Shoe</h1>
+
+                    <div class="form-group">
+                        <label for="newName">Shoe Name</label>
+                        <input v-model="newName" type="text" class="form-control" id="newName"
+                            placeholder="Enter name of new shoe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newPrice">Price</label>
+                        <input v-model="newPrice" type="text" class="form-control" id="newPrice"
+                            placeholder="Enter price of new shoe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newName">Quantity</label>
+                        <input v-model="newQty" type="text" class="form-control" id="newQty"
+                            placeholder="Enter quantity of new shoe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="newName">Picture URL</label>
+                        <input v-model="pictureURL" type="text" class="form-control" id="pictureURL"
+                            placeholder="Enter picture url of shoe">
+                    </div>
+
+
+                    <button @click="addNewShoe" class="btn btn-primary" v-on:submit.prevent="onSubmit">Add
+                        New Shoe</button>
+                </div>
+            </div>
+            <!-- /add shoe qty, add new shoe -->
+
+
+        </div>
+        </div>
+        <!-- /.container -->
+
+
+
+
+        <script>
+            //var sid = $('#sid').val();
+            var replenish_shoe = "http://localhost:5006/replenish_stock";
+            var add_new_shoe = "http://localhost:5001/addNewShoe/";
+
+            var app = new Vue({
+                el: "#app",
+
+                data: {
+                    message: "There is a problem replenish shoes data, please try again later.",
+                    messageB: "There is a problem creating new shoes data, please try again later.",
+                    quantity: "",
+                    sid: '',
+                    product_name: "",
+                    currentID: "",
+                    shoeAdded: false,
+                    addShoeError: "",
+                    newName: "",
+                    newQty: "",
+                    newPrice: "",
+                    selected: '',
+                    pictureURL : "",
+
+                },
+
+                methods: {
+                    addQty: function () {
+                        event.preventDefault()
+
+                        let jsonData = JSON.stringify({
+                            product_name: this.product_name,
+                            new_stock : this.quantity
+                        });
+
+                        const response =
+                            fetch(replenish_shoe, {
+                                method: "PUT",
+                                headers: {
+                                    "Content-type": "application/json"
+                                },
+                                body: jsonData
+                            })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(response);
+                                    if (data.code < 200 || data.code >= 300) {
+                                        alert("OhShoot! There is an error!")
+                                    } else {
+                                        alert("Successful")
+                                    }
+                                })
+                                .catch(error => {
+                                    // Errors when calling the service; such as network error, 
+                                    // service offline, etc
+                                    console.log(this.message + error);
+
+                                });
+
+                    },
+
+                    addNewShoe: function () {
+
+                        let jsonData = JSON.stringify({
+                            name: this.newName,
+                            price: this.newPrice,
+                            quantity: this.newQty,
+                            pictureURL: this.pictureURL,
+                        });
+
+                        const response =
+                            fetch(add_new_shoe + this.newName,
+                                {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-type": "application/json"
+                                    },
+                                    body: jsonData
+                                })
+                                .then(response => response.json())
+                                .then(data => {
+                                    console.log(response);
+                                    if (data.code < 200 || data.code >= 300) {
+                                        alert("OhShoot! " + this.newName + " can't be added!")
+                                    } else {
+                                        alert(this.newName + " has been added successfully!")
+                                    }
+                                })
+                                .catch(error => {
+                                    // Errors when calling the service; such as network error, 
+                                    // service offline, etc
+                                    console.log(this.messageB + error);
+
+                                });
+
+                    },
+                },
+
+
+            });
+        </script>
+
+        <script>
+            // Helper function to display error message
+            function showError(message) {
+                // Display an error under the the predefined label with error as the id
+                $("#results").hide();
+                $('#error').text(message);
+                $('#error').show();
+            }
+
+            $(function () {
+                $("#results").hide();
+
+                //This is considered an event call
+                //It listens to the isbnForm <form id="isbnForm">
+                //When submitted button is clicked it perform a series of actions through a function
+                $("#sForm").submit(async (event) => {
+                    //Prevents screen from refreshing when submitting as we are not going to another page
+                    event.preventDefault();
+
+                    $("#error").hide();
+
+                    //Get ISBN Number from the form
+                    var name = $('#name').val()
+                    var serviceURL = "http://127.0.0.1:5001/stock/" + name;
+
+                    try {
+                        const response =
+                            await fetch(
+                                serviceURL, { method: 'GET' }
+                            );
+                        const data = await response.json();
+                        stock = data.data;     // the actual data is within another data element of the retrieved data 
+
+                        if (response.ok) {
+                            foundStock =
+                                "<tbody>" +
+                                "<tr>" +
+                                "<td>" + stock.SID + "</td>" +
+                                "<td>" + stock.name + "</td>" +
+                                "<td>" + stock.price + "</td>" +
+                                "<td>" + stock.quantity + "</td>" +
+                                "</tr>" +
+                                "<tbody>";
+                            // $('#message').hide();
+                            $("#results").show();
+                            $('#stocksTable tbody').empty();
+                            $('#stocksTable').append(foundStock);
+                        } else {
+                            showError(data.message);
+                        }
+
+                    } catch (error) {
+                        // Errors when calling the service; such as network error, 
+                        // service offline, etc
+                        showError
+                            ('There is a problem retrieving shoes data, please try again later.<br />' + error);
+
+                    }
+                })
+            });
+        </script>
+
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+            integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+            crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+            integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+            crossorigin="anonymous"></script>
+        <script src="vendor/jquery/jquery.min.js"></script>
+        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    </body>
+
+</html>
