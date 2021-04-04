@@ -132,6 +132,7 @@ def create_shoe(name):
     if(Stock.query.filter_by(name=name).first()):
         return jsonify(
             {
+                "code": 400,
                 "message": "Shoe Name already exists."
             }
         ), 400

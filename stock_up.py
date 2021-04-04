@@ -8,6 +8,8 @@ import amqp_setup
 import pika
 import json
 from datetime import datetime
+import smtplib
+from email.message import EmailMessage
 
 app = Flask(__name__)
 
@@ -17,6 +19,7 @@ preorder_URL = "http://localhost:5005/preorder/restock"
 stock_URL = "http://localhost:5001/stock/add/"
 order_URL = "http://localhost:5004/order/create_record"
 shipping_URL = "http://localhost:5003/shipping/create_record"
+account_URL = "http://localhost:5002/get_email/"
 
 #error_URL = "http://localhost:5004/error"
 
@@ -182,6 +185,25 @@ def processPreorder(order):
             #     "data": {"shipping_status": shipping_status["message"]},
             # }
             continue
+        print("shipping_status:", shipping_status)
+        shipping_details = shipping_status["data"]
+        e_name = shipping_details["product_name"]
+        e_address = shipping_details["address"]
+        e_AID = str(shipping_details["AID"])
+        result = invoke_http(account_URL+e_AID, method="GET")
+        e_email = result["email"]
+        email_content = f"Congratulations, your preorder of {e_name} has been processed. The products are on their way to {e_address}"
+        msg = EmailMessage()
+        msg.set_content(email_content)
+        msg['From'] = 'noreply.ohshoot@gmail.com'
+        msg['To'] = e_email #customer email 
+        msg['Subject'] = 'OhShoot Confirmation Email'
+        server = smtplib.SMTP('smtp.gmail.com', 587) #gmail server
+        server.starttls()
+        server.login('noreply.ohshoot@gmail.com', 'ChrisPLay')
+        server.send_message(msg)
+        server.quit()
+
         # Shipment record created successfully, add details into order database
         # print('\n\n-----Shipping record creation successful, invoke order microservice-----')
         # order["datetime"] = shipping_json["datetime"]

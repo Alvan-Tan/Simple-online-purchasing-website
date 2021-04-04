@@ -1,0 +1,164 @@
+version: "3.8"
+
+volumes:
+  rabbitmq_data:
+
+services:
+
+  ####################################
+  # Account: The account microservice
+  ####################################
+  account:
+    build:
+      context: ./
+      dockerfile: account.Dockerfile
+    image: alvantansmu/account:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/account
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5002:5002"
+
+  #################################
+  # Order: The order microservice
+  #################################
+  order:
+    build:
+      context: ./
+      dockerfile: order.Dockerfile
+    image: alvantansmu/order:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/order
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5004:5004"
+
+  
+  #################################
+  # Stock: The stocks microservice
+  #################################
+  stock:
+    build:
+      context: ./
+      dockerfile: stock.Dockerfile
+    image: alvantansmu/stock:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/stock
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5001:5001"
+
+  
+
+  #######################################
+  # Shipping: The shipping microservice
+  #######################################
+  shipping:
+    build:
+      context: ./
+      dockerfile: shipping.Dockerfile
+    image: alvantansmu/shipping:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/shipping
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5003:5003"
+
+  #######################################
+  # Preorder: The Preorder microservice
+  #######################################
+  preorder:
+    build:
+      context: ./
+      dockerfile: preorder.Dockerfile
+    image: alvantansmu/preorder:esd
+    restart: always
+    environment:
+      dbURL: mysql+mysqlconnector://is213@host.docker.internal:3306/preorder
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5005:5005"
+  
+  ####################################
+  # RabbitMQ: The messaging broker   
+  ####################################
+  rabbitmq:
+    image: rabbitmq:3-management
+    hostname: esd-rabbit
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    volumes: 
+      - rabbitmq_data:/var/lib/rabbitmq
+
+  ###################################
+  # Error: The Error microservice
+  ###################################
+  error:
+    build:
+      context: ./
+      dockerfile: error.Dockerfile
+    image: alvantansmu/error:esd
+    restart: always
+    depends_on:
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+
+  ###############################################
+  # Place Order: The Place Order microservice
+  ###############################################
+  place_order:
+    build:
+      context: ./
+      dockerfile: place_order.Dockerfile
+    image: alvantansmu/place_order:esd
+    restart: always
+    depends_on:
+      - account
+      - preorder
+      - order
+      - shipping
+      - stock
+      - error
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5000:5000"
+
+  ###############################################
+  # Stock Up: The Stock Up microservice
+  ###############################################
+  stock_up:
+    build:
+      context: ./
+      dockerfile: stock_up.Dockerfile
+    image: alvantansmu/stock_up:esd
+    restart: always
+    depends_on:
+      - account
+      - preorder
+      - order
+      - shipping
+      - stock
+      - error
+      - rabbitmq
+    environment:
+      rabbit_host: rabbitmq
+      rabbit_port: 5672
+      PYTHONUNBUFFERED: 1
+    ports:
+      - "5600:5600"
+  
+
+

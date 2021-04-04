@@ -52,8 +52,8 @@
         <div class="container" id="app">
 
             <!-- Search for shoes in DB -->
-            <div class="row" style="top: 20px;">
-                <div class="col-10" style="top: 20px; margin: 0 auto;">
+            <div class="row">
+                <div class="col-10" style="top: 50px; margin: 0 auto;">
 
                     <h1>Search for Shoes</h1>
                     <form id="sForm">
@@ -81,7 +81,7 @@
             </div>
             <!-- ./search shoe row -->
 
-
+            <br>
             <div class="row d-flex justify-content-center">
                 <!-- Add shoes QTY -->
                 <div class="col-5" style="top: 20px;">
@@ -234,7 +234,7 @@
                                     if (data.code < 200 || data.code >= 300) {
                                         alert("OhShoot! " + this.newName + " can't be added!")
                                     } else {
-                                        alert(this.newName + " has been added successfully!")
+                                        alert(this.newName + " has been added by successfully! \n Quantity:" +  this.newQty)
                                     }
                                 })
                                 .catch(error => {

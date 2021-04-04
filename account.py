@@ -184,5 +184,24 @@ def update_stock(email):
         }
     ), 404
 
+@flask_app.route("/get_email/<string:AID>", methods=["GET"])
+def get_email_with_AID(AID):
+    person = Account.query.filter_by(AID=AID).first()
+    if person:
+        return jsonify(
+            {
+                "code": 200,
+                "data": person.json(),
+                "message": "Person found",
+                "email": person.email
+            }
+        )
+    return jsonify(
+        {
+            "code": 404,
+            "message": "Person not found."
+        }
+    ), 404
+
 if __name__ == "__main__":
     flask_app.run(port="5002", debug=True)

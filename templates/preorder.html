@@ -117,8 +117,9 @@
                                     alert("Not successful")
                                     
                                 } else {
-                                    
                                     alert("Successful")
+                                    url = `index.html?email=${this.user_email}&token=${this.authentication_token}`
+                                    window.location.replace(url)
                                 }
                             })
                             .catch(error => {
