@@ -2,10 +2,12 @@ from flask import Flask, request, jsonify, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.orm import sessionmaker
+from os import environ
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/stock'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/stock'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/stock'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -127,7 +129,7 @@ def find_by_sname(name):
         }
     ), 404
 
-@app.route("/addNewShoe/<string:name>", methods=["POST"])
+@app.route("/stock/addNewShoe/<string:name>", methods=["POST"])
 def create_shoe(name):
     if(Stock.query.filter_by(name=name).first()):
         return jsonify(
@@ -163,4 +165,4 @@ def create_shoe(name):
 
 
 if __name__ == "__main__":
-    app.run(port="5001", debug=True)
+    app.run(host="0.0.0.0", port=5001, debug=True)

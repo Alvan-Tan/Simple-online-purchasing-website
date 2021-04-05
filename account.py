@@ -8,14 +8,17 @@ import jwt
 import datetime
 #from authenticate import token_required #The token verification script
 from flask import Flask, request
+from os import environ
 
 #what should be our value?
 SECRET_KEY = "secret"
 
 flask_app = Flask(__name__)
+
 CORS(flask_app)
 
-flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/account'
+# flask_app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/account'
+flask_app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/account'
 flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(flask_app)
@@ -23,7 +26,6 @@ db = SQLAlchemy(flask_app)
 # Session = sessionmaker(bind = "innodb")
 # session = Session()
 
-# CORS(app)
 
 class Account(db.Model):
     __tablename__ = 'account'
@@ -77,7 +79,7 @@ class Account(db.Model):
 #original code below
 
 #Check if account exists, return confirmation if it exists, else return error
-@flask_app.route("/login", methods=['POST'])
+@flask_app.route("/account/login", methods=['POST'])
 def login():
     
     data = request.get_json()
@@ -106,7 +108,7 @@ def login():
                     "token": token,
                     #"return_data":return_data
                 }
-            )
+            ), 200
         return jsonify(
         {
             "code": 401,
@@ -121,7 +123,7 @@ def login():
     ), 404
 
 
-@flask_app.route("/verify", methods=['POST'])
+@flask_app.route("/account/verify", methods=['POST'])
 def verify():
 
     data = request.get_json()
@@ -166,7 +168,7 @@ def verify():
         return flask_app.response_class(response=json.dumps(return_data), mimetype='application/json'),500
     # authenticate stuff end
 
-@flask_app.route("/get_name/<string:email>", methods=["GET"])
+@flask_app.route("/account/get_name/<string:email>", methods=["GET"])
 def update_stock(email):
     person = Account.query.filter_by(email=email).first()
     if person:
@@ -184,7 +186,7 @@ def update_stock(email):
         }
     ), 404
 
-@flask_app.route("/get_email/<string:AID>", methods=["GET"])
+@flask_app.route("/account/get_email/<string:AID>", methods=["GET"])
 def get_email_with_AID(AID):
     person = Account.query.filter_by(AID=AID).first()
     if person:
@@ -204,4 +206,4 @@ def get_email_with_AID(AID):
     ), 404
 
 if __name__ == "__main__":
-    flask_app.run(port="5002", debug=True)
+    flask_app.run(host="0.0.0.0", port=5002, debug=True)

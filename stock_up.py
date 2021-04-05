@@ -10,18 +10,17 @@ import json
 from datetime import datetime
 import smtplib
 from email.message import EmailMessage
+from os import environ
 
 app = Flask(__name__)
 
 CORS(app)
 
-preorder_URL = "http://localhost:5005/preorder/restock"
-stock_URL = "http://localhost:5001/stock/add/"
-order_URL = "http://localhost:5004/order/create_record"
-shipping_URL = "http://localhost:5003/shipping/create_record"
-account_URL = "http://localhost:5002/get_email/"
-
-#error_URL = "http://localhost:5004/error"
+preorder_URL = environ.get('preorder_URL') or "http://localhost:5005/preorder/restock"
+stock_URL = environ.get('stock_URL') or "http://localhost:5001/stock/add/"
+order_URL = environ.get('order_URL') or "http://localhost:5004/order/create_record"
+shipping_URL = environ.get('shipping_URL') or "http://localhost:5003/shipping/create_record"
+account_URL = environ.get('account_URL') or "http://localhost:5002/account/get_email/"
 
 @app.route("/replenish_stock", methods=['PUT'])
 def replenish_stock():
@@ -59,9 +58,10 @@ def replenish_stock():
 def processPreorder(order):
     # Invoke the preorder microservice
     print('\n-----Invoking preorder microservice-----')
+    # print("order", order)
     preorder_json = {"product_name":order["product_name"], "new_stock":order["new_stock"]}
     status = invoke_http(preorder_URL, method="GET", json=preorder_json)
-    # print(status)
+    # print("status", status)
 
     # Check the order result; if a failure, send it to the error microservice.
     code = status["code"]
@@ -227,4 +227,4 @@ def processPreorder(order):
 
 
 if __name__ == "__main__":
-    app.run(port="5006", debug=True)
+    app.run(host="0.0.0.0", port=5006, debug=True)

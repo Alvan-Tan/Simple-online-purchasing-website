@@ -35,6 +35,7 @@ services:
     ports:
       - "5004:5004"
 
+
   
   #################################
   # Stock: The stocks microservice
@@ -50,7 +51,7 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5001:5001"
-
+  
   
 
   #######################################
@@ -67,6 +68,7 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5003:5003"
+  
 
   #######################################
   # Preorder: The Preorder microservice
@@ -82,6 +84,7 @@ services:
       PYTHONUNBUFFERED: 1
     ports:
       - "5005:5005"
+ 
   
   ####################################
   # RabbitMQ: The messaging broker   
@@ -132,9 +135,14 @@ services:
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
+      stock_URL: http://stock:5001/stock/minus/
+      account_URL: http://account:5002/account/verify
+      shipping_URL: http://shipping:5003/shipping/create_record
+      order_URL: http://order:5004/order/create_record
       PYTHONUNBUFFERED: 1
     ports:
       - "5000:5000"
+
 
   ###############################################
   # Stock Up: The Stock Up microservice
@@ -156,9 +164,15 @@ services:
     environment:
       rabbit_host: rabbitmq
       rabbit_port: 5672
+      preorder_URL: http://preorder:5005/preorder/restock
+      stock_URL: http://stock:5001/stock/add/
+      account_URL: http://account:5002/account/get_email/
+      shipping_URL: http://shipping:5003/shipping/create_record
+      order_URL: http://order:5004/order/create_record
       PYTHONUNBUFFERED: 1
     ports:
-      - "5600:5600"
+      - "5006:5006"
+ 
   
 
 

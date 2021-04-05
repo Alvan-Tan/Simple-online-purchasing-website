@@ -130,7 +130,7 @@
                             });
                 },
                 get_user: function(){
-                    url = "http://localhost:5002/get_name/" +this.user_email;
+                    url = "http://localhost:5002/account/get_name/" +this.user_email;
                     const response =
                         fetch(url)
                             .then(response => response.json())

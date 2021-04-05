@@ -1,7 +1,6 @@
 Flask==1.1.1
 Flask-Cors==3.0.10
 Flask-SQLAlchemy==2.4.4
-jwt==1.2.0
 mysql-connector-python==8.0.23
 PyJWT==2.0.1
 requests==2.19.1

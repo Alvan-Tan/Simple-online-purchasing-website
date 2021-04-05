@@ -87,7 +87,7 @@
         //     request.send(`username=${username}&password=${password}`);
         // }
         
-        var login_url = "http://localhost:5002/login"
+        var login_url = "http://localhost:5002/account/login"
         var vm = new Vue({
             el: '#app',
             data: {
@@ -116,7 +116,6 @@
                             .then(data => {
                                 console.log(response);
                                 if (data.code < 200 || data.code >= 300) {
-                                
                                     error_ele = document.getElementById("error")
                                     error_ele.innerText = data.message;
                                     

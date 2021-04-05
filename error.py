@@ -4,7 +4,7 @@
 
 import json
 import os
-
+from os import environ
 import amqp_setup
 
 monitorBindingKey='*.error'
@@ -18,7 +18,8 @@ from sqlalchemy.orm import sessionmaker
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/error'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/error'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)

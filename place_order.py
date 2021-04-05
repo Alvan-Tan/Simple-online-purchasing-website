@@ -8,17 +8,16 @@ import amqp_setup
 import pika
 import json
 from datetime import datetime
+from os import environ
 
 app = Flask(__name__)
 
 CORS(app)
 
-account_URL = "http://localhost:5002/verify"
-stock_URL = "http://localhost:5001/stock/minus/"
-order_URL = "http://localhost:5004/order/create_record"
-shipping_URL = "http://localhost:5003/shipping/create_record"
-
-#error_URL = "http://localhost:5004/error"
+account_URL = environ.get('account_URL') or "http://localhost:5002/account/verify"
+stock_URL = environ.get('stock_URL') or "http://localhost:5001/stock/minus/"
+order_URL = environ.get('order_URL') or "http://localhost:5004/order/create_record"
+shipping_URL = environ.get('shipping_URL') or "http://localhost:5003/shipping/create_record"
 
 @app.route("/place_order", methods=['POST'])
 def place_order():
@@ -234,8 +233,5 @@ def processPlaceOrder2(order):
         }
     }
 
-        
-
-
 if __name__ == "__main__":
-    app.run(port="5000", debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)

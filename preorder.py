@@ -3,10 +3,12 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
+from os import environ
 
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/preorder'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/preorder'
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/preorder'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -84,6 +86,8 @@ def preorder_restock():
     #filter out preorders by name of new stock
     preorder = Preorder.query.filter_by(product_name=product_name)
     #holder for later
+    # print("preorder result",preorder)
+
     preorder_list = []
     count = 0
     if preorder:
@@ -104,9 +108,10 @@ def preorder_restock():
                 else:
                     quantity -= new_stock
                     count += new_stock
+                    i.quantity = new_stock
+                    preorder_list.append(i.json())
                     new_stock = 0
                     i.quantity = quantity
-                    preorder_list.append(i.json())
                     db.session.commit()
                     break
                 
@@ -120,7 +125,7 @@ def preorder_restock():
                 },
                 "message": str(count) + " preorder(s) cleared."
             }
-        )
+        ), 200
 
     return jsonify(
         {
@@ -135,4 +140,4 @@ def preorder_restock():
 
 
 if __name__ == "__main__":
-    app.run(port="5005", debug=True)
+    app.run(host="0.0.0.0", port=5005, debug=True)

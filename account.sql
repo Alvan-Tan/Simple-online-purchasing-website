@@ -51,7 +51,7 @@ INSERT INTO `account` (`name`, `password`, `phone`, `email`, `address`) VALUES
 ('Luke', 'NOTMYFATHER', 995, "luke@gmail.com", "81 Victoria St, Singapore 188065"),
 ('Tom', 'GETMEJERRY', 118, "tom@gmail.com", "81 Victoria St, Singapore 188065"),
 ('Jerry', 'TOMISSTUPID', 110, "jerry@gmail.com", "81 Victoria St, Singapore 188065"),
-('John', 'AVERAGEJOE', 123, "john@gmail.com", "81 Victoria St, Singapore 188065"),
+('John', 'AVERAGEJOE', 123, "esmg4t5@gmail.com", "81 Victoria St, Singapore 188065"),
 ('Alice', 'ILOVEWONDERLAND', 456, "alice@gmail.com", "81 Victoria St, Singapore 188065"),
 ('Bob', 'ESM', 789, "bob@gmail.com", "81 Victoria St, Singapore 188065"),
 ('Beth', 'ESM', 101, "beth@gmail.com", "81 Victoria St, Singapore 188065"),

@@ -70,7 +70,7 @@
             data: {
                 productName: "",
                 message: "",
-                price: 50,
+                price: 0,
                 quantity: 0,
                 address: "",
                 authentication_token: "",
@@ -112,10 +112,12 @@
                                 if (data.code < 200 || data.code >= 300) {
                                     message = data.message
                                     if (message == "User not logged in yet"){
+                                        
                                         alert("You are either not logged in or your session has expired! Redirecting to login page.")
                                         window.location.replace("login.html")
                                     }
                                     else{
+                                        
                                         const SID = data.data.stock_status.data.SID
                                         const name = data.data.stock_status.data.name
                                         const pictureURL = data.data.stock_status.data.pictureURL
@@ -125,7 +127,8 @@
                                         let url = `preorder.html?user_email=${this.user_email}&SID=${SID}&name=${name}&pictureURL=${pictureURL}&price=${price}&user_quantity=${this.quantity}&token=${this.authentication_token}&AID=${this.AID}&total_price=${this.total_price}&address=${this.address}`
                                         window.location.replace(url)
                                     }
-                                } else {
+                                } 
+                                else {
                                     this.process_payment = true
                                 }
                             })
@@ -225,7 +228,7 @@
                     window.location.replace(url)
                 },
                 get_user: function(){
-                    url = "http://localhost:5002/get_name/" + this.user_email;
+                    url = "http://localhost:5002/account/get_name/" + this.user_email;
                     const response =
                         fetch(url)
                             .then(response => response.json())
@@ -276,10 +279,32 @@
 
                             });
                 },
+                get_price: function(){
+                    url = "http://localhost:5001/stock/" + this.productName;
+                    const response =
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(response);
+                                if (data.code < 200 || data.code >= 300) {
+                                    alert("No such stock")
+                                } else {
+                                    this.price = data.data.price;
+                                
+                                }
+                            })
+                            .catch(error => {
+                                // Errors when calling the service; such as network error, 
+                                // service offline, etc
+                                console.log(this.message + error);
+
+                            });
+                },
             },
             created: function(){
                this.get_selected_details();
                this.get_user();
+               this.get_price();
             }
 
         })
