@@ -8,13 +8,40 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-    <title>OhShoot store</title>
+    <title>OhShoot Store</title>
+
+    <style>
+        [v-cloak] >* {
+            display:none;
+        }
+    </style>
+
 </head>
 
 <body>
-    <div class="container"  id="app">
+    <div class="container"  id="app" v-cloak>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container">
+
+                <a class="navbar-brand" href="index.html" style="font-size: 24px; color: yellow;">OhShoot!</a>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        
+                        <li class="nav-item">
+                          <a class="nav-link" href="login.html">Sign Out
+                            <span class="sr-only">(current)</span>
+                          </a>
+                        </li>
+    
+                      </ul>
+                </div>
+            </div>
+        </nav>
+        <br>
+        <br>
+
         <div class="row">
-            <h1>Welcome {{user}}</h1>
+            
         </div>
         <br><br>
         <div class="row">
@@ -26,29 +53,31 @@
             </div>
             <div v-else>
                 <form>
-                    Product name:
-                    <br>
-                    <p>{{productName}}</p>
-                    Price per shoe:
-                    <br>
-                    <p>{{price}}</p>
-    
-                    <label for="quantity">Quantity</label>
-                    <input type="number" class="form-control" id="quantity" v-model="quantity" min=0>
-                    Total price : 
-                    <input type="hidden" v-model="total_price">
-                    {{ total_price }}
                     
-                    <br>
+                    <label style="font-size: 20px;"><b>Product name</b></label>:
+                    <p style="font-size: 19px; text-decoration: underline; text-decoration-color: yellow;">{{productName}}</p>
+                  
+                    
+                    <label style="font-size: 20px;"><b>Price per shoe:</b></label>
+                    <p style="font-size: 19px; text-decoration: underline; text-decoration-color: yellow;">${{price}}</p>
+                   
     
-                    <label for="address">Shipping Address</label>
+                    <label for="quantity" style="font-size: 20px;"><b>Quantity</b></label>
+                    <input type="number" class="form-control" id="quantity" v-model="quantity" min=0>
+                    <p style="font-size: 15px; text-decoration: underline; text-decoration-color: yellow;"><b>Total price : </b>
+                    <input type="hidden" v-model="total_price">${{ total_price }}</p>
+                    
+                  
+                   
+                    <label for="address" style="font-size: 20px;"><b>Shipping Address</b></label>
                     <input type="text" class="form-control" id="address" v-model="address">
         
                     <input type="hidden" class="form-control" id="authentication_token" value="ABC">
                 </form>
+                <br>
                 <button class="btn btn-primary" v-on:click="processForm">Submit</button>
                 <button class="btn btn-danger" v-on:click="return_to_index">Cancel</button>
-                
+               
             </div>
         
         </div>
@@ -113,7 +142,7 @@
                                     message = data.message
                                     if (message == "User not logged in yet"){
                                         
-                                        alert("You are either not logged in or your session has expired! Redirecting to login page.")
+                                        alert("OhShoot! You are either not logged in or your session has expired! Redirecting you to the Login page.")
                                         window.location.replace("login.html")
                                     }
                                     else{
@@ -235,7 +264,7 @@
                             .then(data => {
                                 console.log(response);
                                 if (data.code < 200 || data.code >= 300) {
-                                    alert("No such user")
+                                    alert("OhShoot! No such user!")
                                 } else {
                                     this.user = data.data.name;
                                     this.AID = data.data.AID
@@ -266,9 +295,9 @@
                             .then(data => {
                                 console.log(response);
                                 if (data.code < 200 || data.code >= 300) {
-                                    console.log("stock not released")
+                                    console.log("OhShoot! Stock not released.")
                                 } else {
-                                    console.log("stock released")
+                                    console.log("Stock released.")
                                 
                                 }
                             })
@@ -287,7 +316,7 @@
                             .then(data => {
                                 console.log(response);
                                 if (data.code < 200 || data.code >= 300) {
-                                    alert("No such stock")
+                                    alert("OhShoot! No such stock.")
                                 } else {
                                     this.price = data.data.price;
                                 

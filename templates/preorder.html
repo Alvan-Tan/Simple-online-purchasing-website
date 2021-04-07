@@ -6,12 +6,38 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     
-    <title>OhShoot preorder</title>
+    <title>OhShoot Pre-order</title>
+
+    <style>
+        [v-cloak] >* {
+            display:none;
+        }
+    </style>
+
 </head>
 <body>
-    <div class="container" id="app">
+    <div class="container" id="app" v-cloak>
         <!-- how do we include user's name? -->
-        <h1>Welcome {{user}}</h1>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container">
+
+                <a class="navbar-brand" href="index.html" style="font-size: 24px; color: yellow;">OhShoot!</a>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        
+                        <li class="nav-item">
+                          <a class="nav-link" href="login.html">Sign Out
+                            <span class="sr-only">(current)</span>
+                          </a>
+                        </li>
+    
+                      </ul>
+                </div>
+            </div>
+        </nav>
+        <br>
+        <br>
+
         <div v-if="process_payment">
             <img src="images/processing.png">
             <br>
@@ -19,11 +45,15 @@
             <div id="paypal-button"></div>
         </div>
         <div v-else>
-            <h2>We have ran out of stocks, would you like to preorder?</h2>
-            <hr>
+            <br><br>
+            <h2 style="text-align: center; text-decoration: underline; text-decoration-color: yellow;">OhShoot! We have ran out of stocks! 
+                <br>Would you like to pre-order?</h2>
+            
+                <br><br>
+
             <div class="row">
                 <div class="col">
-                    <div class="card" style="width: 18rem;" >
+                    <div class="card" style="width: 18rem; text-align: center; justify-content: center; left: 380px;" >
                         <img class="card-img-top" :src="pictureURL">
                         <div class="card-body">
                             <h5 class="card-title">{{name}}</h5>
@@ -114,7 +144,7 @@
                             .then(data => {
                                 console.log(response);
                                 if (data.code < 200 || data.code >= 300) {
-                                    alert("Not successful")
+                                    alert("OhShoot! Not successful.")
                                     
                                 } else {
                                     alert("Successful")
@@ -137,7 +167,7 @@
                             .then(data => {
                                 console.log(response);
                                 if (data.code < 200 || data.code >= 300) {
-                                    alert("No such user")
+                                    alert("OhShoot! No such user.")
                                 } else {
                                     this.user = data.data.name;
                                 
@@ -177,7 +207,7 @@
                             
                         },
                         onCancel: function (data) {
-                            alert("Order Canceled, redirecting back to homepage")
+                            alert("OhShoot! Order is cancelled, redirecting back to homepage now.")
                             url = `index.html?email=${vm.user_email}&token=${vm.authentication_token}`
                             window.location.replace(url)
                         }

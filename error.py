@@ -19,7 +19,7 @@ from sqlalchemy.orm import sessionmaker
 
 app = Flask(__name__)
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/error'
-app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL')
+app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('dbURL') or 'mysql+mysqlconnector://root@localhost:3306/error'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
@@ -31,7 +31,6 @@ class Error(db.Model):
     EID = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(64), nullable=False)
 
-    # Lay Foo - commented out the constructor
     # def __init__(self, EID, message):
     #     self.EID = EID
     #     self.message = message
@@ -59,19 +58,18 @@ def callback(channel, method, properties, body): # required signature for the ca
 def processError(errorMsg):
     print("Printing the error message:")
     try:
-        # Lay Foo - the following line converts errorMsg (json text) to a python dictionary
+
         error = json.loads(errorMsg)
         print("--JSON:", error)
 
         #start of my code#
-        # Lay Foo - replace
-        # Was: error_record = Error(1, error)
-        # To: 
+        
         error_record = Error(message=errorMsg)
 
         db.session.add(error_record)
         db.session.commit()
         #end of my code#
+        
     except Exception as e:
         print("Exception:", e)
         print("--DATA:", errorMsg)

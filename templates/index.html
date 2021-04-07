@@ -14,15 +14,40 @@
             object-fit: cover; 
             height: auto;
         }
+
+        [v-cloak] >* {
+            display:none;
+        }
         
     </style>
 
     <title>OhShoot store</title>
 </head>
 <body>
-    <div class="container" id="app">
+    <div class="container" id="app" v-cloak>
         <!-- how do we include user's name? -->
-        <h1>Welcome {{user}}</h1>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+            <div class="container">
+
+                <a class="navbar-brand" href="index.html" style="font-size: 24px; color: yellow;">OhShoot!</a>
+                <div class="collapse navbar-collapse" id="navbarResponsive">
+                    <ul class="navbar-nav ml-auto">
+                        
+                        <li class="nav-item">
+                          <a class="nav-link" href="login.html">Sign Out
+                            <span class="sr-only">(current)</span>
+                          </a>
+                        </li>
+    
+                      </ul>
+                </div>
+            </div>
+        </nav>
+        <br>
+        <br>
+
+        <h1 style="font-size: 25px;"><br><br>Welcome {{user}}!<br></h1>
+
         <div class="row" >            
             <!-- added -->
             <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
@@ -56,7 +81,7 @@
             </div>
         </div>
         <br><br>
-        <h2>Our Collection</h2>
+        <h2 style="font-size: 25px;">Our Collection</h2>
         <hr>
         <div class="row" v-if="gotStocks">
 
@@ -102,7 +127,7 @@
                             .then(data => {
                                 console.log(response);
                                 if (data.code < 200 || data.code >= 300) {
-                                    alert("No stocks")
+                                    alert("OhShoot! No stocks!")
                                 } else {
                                     
                                     this.all_stocks = data.data.stocks;
@@ -140,7 +165,7 @@
                             .then(data => {
                                 console.log(response);
                                 if (data.code < 200 || data.code >= 300) {
-                                    alert("No such user")
+                                    alert("OhShoot! No such user found.")
                                 } else {
                                     this.user = data.data.name;
                                 

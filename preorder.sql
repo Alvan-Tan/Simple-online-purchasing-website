@@ -47,21 +47,21 @@ CREATE TABLE IF NOT EXISTS `preorder` (
 -- Dumping data for table `preorder`
 --
 
-INSERT INTO `preorder` (`AID`, `product_name`, `quantity`, `payment_status`, `total_price`, `address`, `datetime`) VALUES
-(001, "Nike Free RN Flyknit","10", 'Paid', 50, '123 lala land', "2020-01-13"),
-(002, "Nike Airmax","4", 'Paid', 50, '123 lala land', "2020-01-13"),
-(003, "Nike Free RN Flyknit","6", 'Paid', 50, '123 lala land', "2020-01-13"),
-(004, "Nike Airmax","1", 'Paid', 50, '123 lala land', "2020-01-13"),
-(005, "Nike Free RN Flyknit","2", 'Paid', 50, '123 lala land', "2020-01-13"),
-(006, "Nike Airmax","1", 'Paid', 50, '123 lala land', "2020-01-13"),
-(007, "Nike Free RN Flyknit","8", 'Paid', 50, '123 lala land', "2020-01-13"),
-(008, "Nike Airforce 1 Low Carhartt WIP Ale Brown","1", 'Paid', 50, '123 lala land', "2020-01-13"),
-(009, "Nike Free RN Flyknit","6", 'Paid', 50, '123 lala land', "2020-01-13"),
-(010, "Nike Airforce 1 Low Carhartt WIP Ale Brown","1", 'Paid', 50, '123 lala land', "2020-01-13"),
-(011, "Nike Free RN Flyknit","3", 'Paid', 50, '123 lala land', "2020-01-13"),
-(012, "Nike Airforce 1 Low Carhartt WIP Ale Brown","1", 'Paid', 50, '123 lala land', "2020-01-13"),
-(013, "Nike Free RN Flyknit","2", 'Paid', 50, '123 lala land', "2020-01-13")
-;
+-- INSERT INTO `preorder` (`AID`, `product_name`, `quantity`, `payment_status`, `total_price`, `address`, `datetime`) VALUES
+-- (001, "Nike Free RN Flyknit","10", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (002, "Nike Airmax","4", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (003, "Nike Free RN Flyknit","6", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (004, "Nike Airmax","1", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (005, "Nike Free RN Flyknit","2", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (006, "Nike Airmax","1", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (007, "Nike Free RN Flyknit","8", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (008, "Nike Airforce 1 Low Carhartt WIP Ale Brown","1", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (009, "Nike Free RN Flyknit","6", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (010, "Nike Airforce 1 Low Carhartt WIP Ale Brown","1", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (011, "Nike Free RN Flyknit","3", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (012, "Nike Airforce 1 Low Carhartt WIP Ale Brown","1", 'Paid', 50, '123 lala land', "2020-01-13"),
+-- (013, "Nike Free RN Flyknit","2", 'Paid', 50, '123 lala land', "2020-01-13")
+-- ;
 
 -- --------------------------------------------------------
 

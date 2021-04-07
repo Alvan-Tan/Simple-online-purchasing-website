@@ -171,7 +171,7 @@ def processPlaceOrder2(order):
         
         #Send error details to error microservice
         
-        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="shipping.error", 
+        amqp_setup.channel.basic_publish(exchange=amqp_setup.exchangename, routing_key="order.error", 
             body=message, properties=pika.BasicProperties(delivery_mode = 2)) 
         # make message persistent within the matching queues until it is received by some receiver 
         # (the matching queues have to exist and be durable and bound to the exchange)

@@ -32,6 +32,11 @@
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
             integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
+            <style>
+                [v-cloak] >* {
+                    display:none;
+                }
+            </style>
     </head>
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
@@ -49,7 +54,7 @@
         </nav>
         <br>
         <!-- Page Content -->
-        <div class="container" id="app">
+        <div class="container" id="app" v-cloak>
 
             <!-- Search for shoes in DB -->
             <div class="row">
@@ -293,7 +298,7 @@
                                 "<td>" + stock.price + "</td>" +
                                 "<td>" + stock.quantity + "</td>" +
                                 "</tr>" +
-                                "<tbody>";
+                                "<tbody> <br>";
                             // $('#message').hide();
                             $("#results").show();
                             $('#stocksTable tbody').empty();
